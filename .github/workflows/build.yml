@@ -12,12 +12,27 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v5
         with:
+          architecture: x64
           python-version: '3.8'
+      - name: Setup Java 17 required by Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set JAVA_HOME
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+        shell: bash
+      - name: Prepare virtual environment
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          echo "Using Python==$(python --version)"
+        shell: bash
       - name: Install and upgrade dependencies
         run: |
-          sudo apt-get update -y
-          sudo apt-get upgrade -y
-          sudo apt-get install -y git \
+          sudo apt update
+          sudo apt install -y git \
             zip \
             unzip \
             openjdk-17-jdk \
@@ -32,11 +47,16 @@ jobs:
             cmake \
             libffi-dev \
             libssl-dev
-          export PATH=$PATH:~/.local/bin/ >> ~/.bashrc
-          python3 -m pip install --user --upgrade \
+          export PATH=$PATH:~/.local/bin/
+          python3 -m pip install --upgrade \
             Cython==0.29.33 \
-            buildozer \
-            virtualenv
+            buildozer
+        shell: bash
+      - name: Install requirements in requirements.txt if it exists
+        run: |
+          if [ -f requirements.txt ]; then
+            python3 -m pip install -r requirements.txt
+          fi
         shell: bash
       - name: Build with Buildozer
         run: |
