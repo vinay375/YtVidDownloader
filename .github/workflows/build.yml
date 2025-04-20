@@ -14,6 +14,13 @@ jobs:
         with:
           architecture: x64
           python-version: '3.8'
+      - name: Prepare virtual environment
+        run: |
+          python3 -m pip install --upgrade \
+            Cython==0.29.33 \
+            buildozer
+          export PATH=$PATH:~/.local/bin/
+        shell: bash
       - name: Install and upgrade dependencies
         run: |
           sudo apt-get update -y
@@ -38,10 +45,6 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           echo "Using Python==$(python --version)"
-          python3 -m pip install --upgrade \
-            Cython==0.29.33 \
-            buildozer
-          export PATH=$PATH:~/.local/bin/
         shell: bash
       - name: Install requirements in requirements.txt if it exists
         run: |
