@@ -5,12 +5,8 @@ on:
       - main
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
-      - name: User check
-        run: |
-          whoami
-          pwd
       - name: Cloning Repository To Runner
         uses: actions/checkout@v4
       - name: Setup python
@@ -18,21 +14,6 @@ jobs:
         with:
           architecture: x64
           python-version: '3.8'
-      - name: Setup Java 17 required by Gradle
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Set JAVA_HOME
-        run: |
-          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
-        shell: bash
-      - name: Prepare virtual environment
-        run: |
-          python3 -m venv venv
-          source venv/bin/activate
-          echo "Using Python==$(python --version)"
-        shell: bash
       - name: Install and upgrade dependencies
         run: |
           sudo apt-get update -y
@@ -52,10 +33,15 @@ jobs:
             cmake \
             libffi-dev \
             libssl-dev
-          export PATH=$PATH:~/.local/bin/
+      - name: Prepare virtual environment
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          echo "Using Python==$(python --version)"
           python3 -m pip install --upgrade \
             Cython==0.29.33 \
             buildozer
+          export PATH=$PATH:~/.local/bin/
         shell: bash
       - name: Install requirements in requirements.txt if it exists
         run: |
