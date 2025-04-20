@@ -7,6 +7,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: User check
+        run: |
+          whoami
+          pwd
       - name: Cloning Repository To Runner
         uses: actions/checkout@v4
       - name: Setup python
